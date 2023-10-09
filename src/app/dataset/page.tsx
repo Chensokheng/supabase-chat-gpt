@@ -1,7 +1,7 @@
+import React from "react";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import React from "react";
 
 export default async function page() {
 	const supabase = createServerComponentClient({ cookies });
@@ -12,5 +12,19 @@ export default async function page() {
 		return redirect("/auth");
 	}
 
-	return <div>page</div>;
+	const { data: user } = await supabase
+		.from("users")
+		.select("role")
+		.eq("id", data.session.user.id)
+		.single();
+
+	if (user?.role !== "admin") {
+		return redirect("/");
+	}
+
+	return (
+		<div>
+			<h1>dataset</h1>
+		</div>
+	);
 }
